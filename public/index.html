@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BackMeUp Web Interface</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 BackMeUp Scanner</h1>
+        
+        <div class="input-group">
+            <input type="text" id="domain" placeholder="Enter target domain (e.g., example.com)">
+            <button id="scan-btn">Start Scan</button>
+        </div>
+
+        <div id="progress" class="hidden">
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <p id="status">Initializing scan...</p>
+        </div>
+
+        <div id="results" class="hidden">
+            <h2>Scan Results</h2>
+            <div id="result-content"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
