@@ -191,88 +191,119 @@ emoticons(){
     done
     printf " \r└──${green}[${name}]${end} : `wc -l ${BASE_DIR}/output/${target}_$(date -I)/${target}_${name}.txt|awk '{print $1}'`\n"
 }
+function check_completed() {
+    local tool=$1
+    local file="${BASE_DIR}/output/${target}_$(date -I)/${target}_${tool}.txt"
+    if [[ -f "$file" ]] && [[ -s "$file" ]]; then
+        printf " ${green}[+] ${tool}${end}:\t${logo}Already completed - skipping${end}\n"
+        return 0
+    fi
+    return 1
+}
+
 function collect() {
        if [[ ! -z "${target}" ]];then
-
             printf "\n${target} ${yellow}BACK-ME-UP ${end}[${logo}Author: Dheeraj Madhukar${end}]\n"
             if [ ! -d ${BASE_DIR}/output/${target}_$(date -I) ];then mkdir -p ${BASE_DIR}/output/${target}_$(date -I) &> /dev/null;fi
 # ╭─────────────────────╮
 # |         GOSPIDER    |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-                gospider -s "https://${target}" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" --quiet --depth 5 --concurrent 80 --threads 100 --delay 1 --random-delay 1 --timeout 10 --js --robots --other-source --include-subs --include-other-source --subs --sitemap --no-redirect --raw 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gospider.txt &> /dev/null &
-                emoticons "gospider"
+                if ! check_completed "gospider"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    gospider -s "https://${target}" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" --quiet --depth 5 --concurrent 80 --threads 100 --delay 1 --random-delay 1 --timeout 10 --js --robots --other-source --include-subs --include-other-source --subs --sitemap --no-redirect --raw 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gospider.txt &> /dev/null &
+                    emoticons "gospider"
+                fi
 # ╭─────────────────────╮
 # |         CRAWLEY     |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-                crawley -all -user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" -subdomains -headless -depth -1 -silent -skip-ssl -workers 50 -timeout 10s -robots crawl https://${target} 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_crawley.txt &> /dev/null &
-                emoticons "crawley"
+                if ! check_completed "crawley"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    crawley -all -user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" -subdomains -headless -depth -1 -silent -skip-ssl -workers 50 -timeout 10s -robots crawl https://${target} 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_crawley.txt &> /dev/null &
+                    emoticons "crawley"
+                fi
 # ╭─────────────────────╮
 # |         CARIDDI     |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-                echo https://${target} | cariddi -s -d 2 -c 200 -e -ext 7 -cache -t 10 -intensive -rua -err -info 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_cariddi.txt &> /dev/null &
-                emoticons "cariddi"
+                if ! check_completed "cariddi"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo https://${target} | cariddi -s -d 2 -c 200 -e -ext 7 -cache -t 10 -intensive -rua -err -info 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_cariddi.txt &> /dev/null &
+                    emoticons "cariddi"
+                fi
 # ╭─────────────────────╮
 # |         GAU         |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-               echo ${target} | gau --providers wayback,commoncrawl,otx,urlscan --retries 2 --subs --threads 100 --timeout 10 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gau.txt 2>&1 > /dev/null &
-                emoticons "gau"
+                if ! check_completed "gau"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo ${target} | gau --providers wayback,commoncrawl,otx,urlscan --retries 2 --subs --threads 100 --timeout 10 2> /dev/null | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gau.txt 2>&1 > /dev/null &
+                    emoticons "gau"
+                fi
 
 # ╭─────────────────────╮
 # |         GAUPLUS     |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-               echo ${target} | gauplus -random-agent -subs -retries 2 -t 100 -providers wayback,otx,commoncrawl | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gauplus.txt 2>&1 > /dev/null &
-                emoticons "gauplus"
+                if ! check_completed "gauplus"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo ${target} | gauplus -random-agent -subs -retries 2 -t 100 -providers wayback,otx,commoncrawl | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_gauplus.txt 2>&1 > /dev/null &
+                    emoticons "gauplus"
+                fi
 
 # ╭─────────────────────╮
 # |     hakrawler       |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-                echo "https://www.${target}" | hakrawler -d 5 -dr -insecure -t 10 -timeout 3600 -subs | tee ${BASE_DIR}/output/${target}_$(date -I)/${target}_hakrawler.txt 2>&1 > /dev/null &
-                emoticons "hakrawler"
+                if ! check_completed "hakrawler"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "https://www.${target}" | hakrawler -d 5 -dr -insecure -t 10 -timeout 3600 -subs | tee ${BASE_DIR}/output/${target}_$(date -I)/${target}_hakrawler.txt 2>&1 > /dev/null &
+                    emoticons "hakrawler"
+                fi
 
 
 # ╭─────────────────────╮
 # |     KATANA PASSIVE  |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-                echo "${target}" | katana -passive -jc -jsl -fx -xhr -kf all -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_passive.txt 2>&1 > /dev/null &
-                emoticons "katana_passive"
+                if ! check_completed "katana_passive"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "${target}" | katana -passive -jc -jsl -fx -xhr -kf all -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_passive.txt 2>&1 > /dev/null &
+                    emoticons "katana_passive"
+                fi
 
 ###### katana_depth-first ACTIVE
 # ╭─────────────────────╮
 # | KATANA ACTIVE df    |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-               echo "${target}" | katana -d 5 -jc -ct 1h -aff -fx -s depth-first -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_df.txt 2>&1 > /dev/null &
-                emoticons "katana_df"
+                if ! check_completed "katana_df"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "${target}" | katana -d 5 -jc -ct 1h -aff -fx -s depth-first -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_df.txt 2>&1 > /dev/null &
+                    emoticons "katana_df"
+                fi
 
 ###### katana_breadth-first ACTIVE
 # ╭─────────────────────╮
 # | KATANA ACTIVE BF    |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-              echo "${target}" | katana -d 5 -jc -ct 1h -aff -fx -s breadth-first -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_bf.txt 2>&1 > /dev/null &
-                emoticons "katana_bf"
+                if ! check_completed "katana_bf"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "${target}" | katana -d 5 -jc -ct 1h -aff -fx -s breadth-first -c 50 -silent | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_katana_bf.txt 2>&1 > /dev/null &
+                    emoticons "katana_bf"
+                fi
 
 # ╭─────────────────────╮
 # |     WAYBACKURLS     |
 # ╰─────────────────────╯
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-               echo "${target}" | waybackurls | egrep -v "^[[:blank:]]*$" | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_waybackurls.txt 2>&1 > /dev/null &
-                emoticons "waybackurls"
+                if ! check_completed "waybackurls"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "${target}" | waybackurls | egrep -v "^[[:blank:]]*$" | anew -q ${BASE_DIR}/output/${target}_$(date -I)/${target}_waybackurls.txt 2>&1 > /dev/null &
+                    emoticons "waybackurls"
+                fi
 
 # ╭─────────────────────╮
 # |     WAYMORE         |
 # ╰─────────────────────╯
                 # APIs
-                trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
-               echo "${target}" | waymore -i ${target} -mode U --retries 3 --timeout 10 --memory-threshold 95 --processes 5 --config ~/.config/waymore/config.yml --output-urls ${BASE_DIR}/output/${target}_$(date -I)/${target}_waymore.txt &> /dev/null &
-                emoticons "waymore"
+                if ! check_completed "waymore"; then
+                    trap dotraps SIGINT SIGPIPE SIGTERM SIGHUP
+                    echo "${target}" | waymore -i ${target} -mode U --retries 3 --timeout 10 --memory-threshold 95 --processes 5 --config ~/.config/waymore/config.yml --output-urls ${BASE_DIR}/output/${target}_$(date -I)/${target}_waymore.txt &> /dev/null &
+                    emoticons "waymore"
+                fi
        fi
 }
 
